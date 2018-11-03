@@ -17,7 +17,7 @@ public class Bounds {
         return point.getX() > topLeft.getX() && point.getX() < bottomRight.getX() && point.getY() > topLeft.getY() && point.getY() < bottomRight.getY();
     }
 
-    public boolean isColliding(Entity entity) {
+    public boolean isColliding(Entity entity, int yOffset) {
         // Testing points:
         // * -- * -- *
         // |         |
@@ -36,6 +36,25 @@ public class Bounds {
         Coordinate bottomMiddle = entity.getLocation().offset(entity.getSprite().getWidth() / 2, entity.getSprite().getHeight());
         Coordinate bottomRight = entity.getLocation().offset(entity.getSprite().getWidth(), entity.getSprite().getHeight());
 
-        return isColliding(topLeft) || isColliding(topMiddle) || isColliding(topRight) || isColliding(middleLeft) || isColliding(middleRight) || isColliding(bottomLeft) || isColliding(bottomMiddle) || isColliding(bottomRight);
+        return isColliding(topLeft.offsetY(yOffset)) ||
+            isColliding(topMiddle.offsetY(yOffset)) ||
+            isColliding(topRight.offsetY(yOffset)) ||
+            isColliding(middleLeft.offsetY(yOffset)) ||
+            isColliding(middleRight.offsetY(yOffset)) ||
+            isColliding(bottomLeft.offsetY(yOffset)) ||
+            isColliding(bottomMiddle.offsetY(yOffset)) ||
+            isColliding(bottomRight.offsetY(yOffset));
+    }
+
+    public boolean isColliding(Entity entity) {
+        return isColliding(entity, 0);
+    }
+
+    public Coordinate getBottomRight() {
+        return bottomRight;
+    }
+
+    public Coordinate getTopLeft() {
+        return topLeft;
     }
 }
