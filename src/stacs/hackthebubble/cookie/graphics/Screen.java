@@ -61,7 +61,7 @@ public class Screen {
     // Utility functions
 
     /**
-     * Renders the given sprite at the given location using the grahic manager provided
+     * Renders the given sprite at the given location using the graphic manager provided
      *
      * @param sprite   the sprite which needs to be drawn
      * @param position the position on the screen that this should be drawn at
