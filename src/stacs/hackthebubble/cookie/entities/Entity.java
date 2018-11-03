@@ -106,4 +106,12 @@ public class Entity implements Renderable {
     public void show() {
         visible = true;
     }
+
+    public Coordinate getLocation() {
+        return location;
+    }
+
+    public Sprite getSprite() {
+        return sprite;
+    }
 }
