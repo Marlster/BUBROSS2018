@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
+import stacs.hackthebubble.cookie.events.EventEmitter;
 
 /**
  * The window in which the game is running and controls the launching and execution of the main renderer thread of the program
@@ -41,6 +42,8 @@ public class GameWindow extends Canvas implements Runnable {
         frame.add(this);
         frame.pack();
 
+        EventEmitter.subscribe("update", (a, b) -> frame.setTitle("UPDATE! " + System.currentTimeMillis()));
+
         containerThread = new Thread(this, "Game Core Thread");
     }
 
@@ -69,7 +72,7 @@ public class GameWindow extends Canvas implements Runnable {
         int fps = 0;
         int ups = 0;
         while (running) {
-            render();
+//            render();
             fps++;
 
             // Update should only be called 60 times per second so if only 1/60th of a second has passed can we call it
@@ -113,7 +116,7 @@ public class GameWindow extends Canvas implements Runnable {
      * Called approximately 60 times per second and should be used for fixed rate updates
      */
     private void update() {
-
+        EventEmitter.emit("update");
     }
 
 }
