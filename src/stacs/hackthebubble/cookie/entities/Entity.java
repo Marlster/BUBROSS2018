@@ -1,6 +1,7 @@
 package stacs.hackthebubble.cookie.entities;
 
 import java.awt.Graphics2D;
+import stacs.hackthebubble.cookie.game.GameState;
 import stacs.hackthebubble.cookie.graphics.Screen;
 import stacs.hackthebubble.cookie.graphics.sprites.Sprite;
 import stacs.hackthebubble.cookie.location.Coordinate;
@@ -10,7 +11,7 @@ public class Entity implements Renderable {
     /**
      * The location on the screen that this entity should be drawn at
      */
-    private Coordinate location;
+    protected Coordinate location;
     /**
      * The sprite that should be rendered to represent this entity
      */
@@ -24,6 +25,10 @@ public class Entity implements Renderable {
      * If the entity should be removed on the next update run by the screen
      */
     private boolean markedForDeletion;
+    /**
+     * Sets whether the entity is static which means that it would not be affected by gravity
+     */
+    private boolean isStatic = false;
 
     /**
      * Constructs a new entity that is not marked for deletion and is visible with the given position and sprite
@@ -79,6 +84,11 @@ public class Entity implements Renderable {
 
     @Override
     public void onEvent(String event, Object... data) {
+        if (!isStatic) {
+            if (GameState.getActiveGameState() != null && GameState.getActiveGameState().getLevel().getBounds().stream().noneMatch(b -> b.isColliding(this, 6))) {
+                location = location.offsetY(5);
+            }
+        }
     }
 
     public boolean isMarkedForDeletion() {
@@ -113,5 +123,19 @@ public class Entity implements Renderable {
 
     public Sprite getSprite() {
         return sprite;
+    }
+
+    /**
+     * Makes the entity static so it wont be affected by gravity
+     */
+    public void freeze() {
+        isStatic = true;
+    }
+
+    /**
+     * Makes the entity non-static so it will be affected by gravity
+     */
+    public void release() {
+        isStatic = false;
     }
 }

@@ -6,9 +6,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import stacs.hackthebubble.cookie.entities.Entity;
+import stacs.hackthebubble.cookie.events.EventEmitter;
+import stacs.hackthebubble.cookie.events.EventEmitter.EventConstant;
+import stacs.hackthebubble.cookie.events.Listener;
 import stacs.hackthebubble.cookie.graphics.Screen;
 
-public class GameState {
+public class GameState implements Listener {
 
     /**
      * Contains the current game state being run by the program. This should only be updated when something major changes such as a level change
@@ -59,6 +62,8 @@ public class GameState {
     public GameState(Level level, Entity... entities) {
         this.level = level;
         addEntities(entities);
+
+        EventEmitter.subscribe(EventConstant.UPDATE.getEventName(), this);
     }
 
     /**
@@ -132,5 +137,15 @@ public class GameState {
         return this.entities.removeAll(entities);
     }
 
+    public Level getLevel() {
+        return level;
+    }
 
+    @Override
+    public void onEvent(String event, Object... data) {
+        if (EventConstant.UPDATE.isEvent(event)){
+            level.onEvent(event, data);
+            entities.forEach(e -> e.onEvent(event, data));
+        }
+    }
 }

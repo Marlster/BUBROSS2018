@@ -8,6 +8,7 @@ import java.util.List;
 import stacs.hackthebubble.cookie.entities.Entity;
 import stacs.hackthebubble.cookie.entities.Renderable;
 import stacs.hackthebubble.cookie.entities.nonphysical.Bounds;
+import stacs.hackthebubble.cookie.events.EventEmitter.EventConstant;
 import stacs.hackthebubble.cookie.graphics.Screen;
 import stacs.hackthebubble.cookie.graphics.sprites.Sprite;
 import stacs.hackthebubble.cookie.location.Coordinate;
@@ -176,9 +177,16 @@ public class Level implements Renderable {
 
     @Override
     public void onEvent(String event, Object... data) {
+        if (EventConstant.UPDATE.isEvent(event)) {
+            entities.forEach(e -> e.onEvent(event, data));
+        }
     }
 
     public String getName() {
         return name;
+    }
+
+    public List<Bounds> getBounds() {
+        return bounds;
     }
 }
