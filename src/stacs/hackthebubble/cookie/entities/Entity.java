@@ -28,7 +28,7 @@ public class Entity implements Renderable {
     /**
      * Sets whether the entity is static which means that it would not be affected by gravity
      */
-    private boolean isStatic = false;
+    protected boolean isStatic = false;
 
     /**
      * Constructs a new entity that is not marked for deletion and is visible with the given position and sprite
