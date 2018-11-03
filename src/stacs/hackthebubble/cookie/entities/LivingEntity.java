@@ -1,5 +1,8 @@
 package stacs.hackthebubble.cookie.entities;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import stacs.hackthebubble.cookie.graphics.Screen;
 import stacs.hackthebubble.cookie.graphics.sprites.Sprite;
 import stacs.hackthebubble.cookie.location.Coordinate;
 
@@ -76,4 +79,16 @@ public class LivingEntity extends Entity {
         return this.health <= 0;
     }
 
+    @Override
+    public void render(Graphics2D g, Screen screen) {
+        int barWidth = getSprite().getWidth();
+        double multiplier = (double) health / (double) maxHealth;
+        int filledWidth = (int) (barWidth * multiplier);
+
+        super.render(g, screen);
+        g.setColor(new Color(115, 35, 105));
+        g.fillRect(getLocation().getX(), getLocation().getY() - 10, barWidth, 5);
+        g.setColor(new Color(81, 0, 81));
+        g.fillRect(getLocation().getX(), getLocation().getY() - 10, filledWidth, 5);
+    }
 }
