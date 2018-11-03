@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import stacs.hackthebubble.cookie.entities.Entity;
 import stacs.hackthebubble.cookie.events.EventEmitter;
 import stacs.hackthebubble.cookie.events.EventEmitter.EventConstant;
@@ -51,7 +52,7 @@ public class GameState implements Listener {
     /**
      * The entities currently contained within the game
      */
-    private List<Entity> entities = new ArrayList<>();
+    private final List<Entity> entities = new CopyOnWriteArrayList<>();
 
     /**
      * Constructs a game with the given level ready for rendering and adds the given entities to the list of entities in play
@@ -74,7 +75,9 @@ public class GameState implements Listener {
      */
     public void render(Graphics2D g, Screen screen) {
         level.render(g, screen);
-        entities.stream().filter(e -> e.isRendered() && !e.isMarkedForDeletion()).forEach(e -> e.render(g, screen));
+        synchronized (entities) {
+            entities.stream().filter(e -> e.isRendered() && !e.isMarkedForDeletion()).forEach(e -> e.render(g, screen));
+        }
     }
 
     /**
@@ -84,7 +87,9 @@ public class GameState implements Listener {
      * @return if the entity was added was successfully
      */
     public boolean addEntity(Entity entity) {
-        return entities.add(entity);
+        synchronized (entities) {
+            return entities.add(entity);
+        }
     }
 
     /**
@@ -104,7 +109,9 @@ public class GameState implements Listener {
      * @return if the entity set was added was successfully
      */
     public boolean addEntities(Collection<Entity> entities) {
-        return this.entities.addAll(entities);
+        synchronized (entities) {
+            return this.entities.addAll(entities);
+        }
     }
 
     /**
@@ -114,7 +121,9 @@ public class GameState implements Listener {
      * @return if the entity was removed successfully
      */
     public boolean removeEntity(Entity entity) {
-        return entities.remove(entity);
+        synchronized (entities) {
+            return entities.remove(entity);
+        }
     }
 
     /**
@@ -134,7 +143,9 @@ public class GameState implements Listener {
      * @return if the entity set was removed successfully
      */
     public boolean removeEntities(Collection<Entity> entities) {
-        return this.entities.removeAll(entities);
+        synchronized (entities) {
+            return this.entities.removeAll(entities);
+        }
     }
 
     public Level getLevel() {
@@ -143,9 +154,11 @@ public class GameState implements Listener {
 
     @Override
     public void onEvent(String event, Object... data) {
-        if (EventConstant.UPDATE.isEvent(event)){
+        if (EventConstant.UPDATE.isEvent(event)) {
             level.onEvent(event, data);
-            entities.forEach(e -> e.onEvent(event, data));
+            synchronized (entities) {
+                entities.forEach(e -> e.onEvent(event, data));
+            }
         }
     }
 }
