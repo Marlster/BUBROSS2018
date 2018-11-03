@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.util.Random;
 import stacs.hackthebubble.cookie.events.EventEmitter;
+import stacs.hackthebubble.cookie.game.GameState;
 import stacs.hackthebubble.cookie.graphics.sprites.Sprite;
 import stacs.hackthebubble.cookie.location.Coordinate;
 
@@ -33,21 +34,13 @@ public class Screen {
     }
 
     /**
-     * For demonstration purposes only
-     */
-    private Random random = new Random();
-
-    /**
      * Renders all levels and instances to the given graphics instance
      *
      * @param g the graphics to draw the images to
      */
     public void render(Graphics2D g) {
-        for (int y = 0; y < height; y += random.nextInt(15) + 15) {
-            for (int x = 0; x < width; x += random.nextInt(15) + 15) {
-                g.setColor(new Color(random.nextInt(255), random.nextInt(255), random.nextInt(255)));
-                g.fillRect(x, y, 30, 30);
-            }
+        if (GameState.getActiveGameState() != null){
+            GameState.getActiveGameState().render(g, this);
         }
     }
 
