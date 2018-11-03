@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import stacs.hackthebubble.cookie.entities.Entity;
 import stacs.hackthebubble.cookie.entities.Renderable;
+import stacs.hackthebubble.cookie.entities.nonphysical.Bounds;
 import stacs.hackthebubble.cookie.graphics.Screen;
 import stacs.hackthebubble.cookie.graphics.sprites.Sprite;
 import stacs.hackthebubble.cookie.location.Coordinate;
@@ -26,6 +27,10 @@ public class Level implements Renderable {
      * The entities bound to the level. These should be things like platforms, items and other things that are locked to the level and not the game state.
      */
     private List<Entity> entities = new ArrayList<>();
+    /**
+     * Nonphysical barriers on the level which act as platforms
+     */
+    private List<Bounds> bounds = new ArrayList<>();
 
     /**
      * Constructs a new level with the given sprite for the backdrop and the name
@@ -96,6 +101,66 @@ public class Level implements Renderable {
      */
     public boolean removeEntities(Collection<Entity> entities) {
         return this.entities.removeAll(entities);
+    }
+
+    /**
+     * Ads the given bound to the level bounds which will be rendered when the level renders
+     *
+     * @param bound the bound to add
+     * @return if the bound was added was successfully
+     */
+    public boolean addBound(Bounds bound) {
+        return bounds.add(bound);
+    }
+
+    /**
+     * Ads the given bounds to the level bounds which will be rendered when the level renders
+     *
+     * @param bounds the bounds to add
+     * @return if the bound set was added was successfully
+     */
+    public boolean addBounds(Bounds... bounds) {
+        return addBounds(Arrays.asList(bounds));
+    }
+
+    /**
+     * Ads the given bounds to the level bounds which will be rendered when the level renders
+     *
+     * @param bounds the bounds to add
+     * @return if the bound set was added was successfully
+     */
+    public boolean addBounds(Collection<Bounds> bounds) {
+        return this.bounds.addAll(bounds);
+    }
+
+    /**
+     * Remove the given bound from the level set
+     *
+     * @param bound the bound to remove
+     * @return if the bound was removed successfully
+     */
+    public boolean removeBound(Bounds bound) {
+        return bounds.remove(bound);
+    }
+
+    /**
+     * Remove the given bounds from the level set
+     *
+     * @param bounds the bounds to remove
+     * @return if the bound set was removed successfully
+     */
+    public boolean removeBounds(Bounds... bounds) {
+        return removeBounds(Arrays.asList(bounds));
+    }
+
+    /**
+     * Remove the given bounds from the level set
+     *
+     * @param bounds the bounds to remove
+     * @return if the bound set was removed successfully
+     */
+    public boolean removeBounds(Collection<Bounds> bounds) {
+        return this.bounds.removeAll(bounds);
     }
 
     @Override
