@@ -69,6 +69,7 @@ public class GameState {
      */
     public void render(Graphics2D g, Screen screen) {
         level.render(g, screen);
+        entities.stream().filter(e -> e.isRendered() && !e.isMarkedForDeletion()).forEach(e -> e.render(g, screen));
     }
 
     /**
