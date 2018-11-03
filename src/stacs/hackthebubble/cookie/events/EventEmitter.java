@@ -9,6 +9,38 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class EventEmitter {
 
+    public enum EventConstant {
+        UPDATE("update");
+
+        /**
+         * The event name what should be sent via {@link #emit(String, Object...)} to ensure consistent detection
+         */
+        private String eventName;
+
+        /**
+         * Constructs an event constant with the given name. This name should be the only name used to send this event to ensure that all receivers are able to detect it.
+         *
+         * @param eventName the name of the event to be sent via {@link #emit(String, Object...)}
+         */
+        EventConstant(String eventName) {
+            this.eventName = eventName;
+        }
+
+        public String getEventName() {
+            return eventName;
+        }
+
+        /**
+         * Tests if the given event is equal to this event constant. This is case insensitive to allow for greater flexibility
+         *
+         * @param event the event received
+         * @return if this event constant matches
+         */
+        public boolean isEvent(String event) {
+            return event.equalsIgnoreCase(eventName);
+        }
+    }
+
     /**
      * Contains all event types and their lists of associated listeners. Due to the multithreaded nature, it uses a concurrent implementation and should be
      * synchronised at all times of use
@@ -60,6 +92,17 @@ public class EventEmitter {
                 subscribedListeners.get(event).forEach(e -> e.onEvent(event, data));
             }
         }
+    }
+
+    /**
+     * Emits the given event and data sets to the listeners that have been registered to this event via {@link #subscribe(String, Listener)}. This is an alias function
+     * for {@link #emit(String, Object...)} using {@link EventConstant#getEventName()}
+     *
+     * @param constant the constant name of the event
+     * @param data  data to be sent with the request
+     */
+    public static void emit(EventConstant constant, Object... data) {
+        emit(constant.getEventName(), data);
     }
 
 }

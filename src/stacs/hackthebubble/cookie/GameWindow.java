@@ -8,6 +8,7 @@ import java.awt.image.BufferStrategy;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 import stacs.hackthebubble.cookie.events.EventEmitter;
+import stacs.hackthebubble.cookie.events.EventEmitter.EventConstant;
 import stacs.hackthebubble.cookie.graphics.Screen;
 
 /**
@@ -122,7 +123,7 @@ public class GameWindow extends Canvas implements Runnable {
      * Called approximately 60 times per second and should be used for fixed rate updates
      */
     private void update() {
-        EventEmitter.emit("update");
+        EventEmitter.emit(EventConstant.UPDATE);
     }
 
 }
