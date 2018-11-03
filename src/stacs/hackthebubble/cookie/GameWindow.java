@@ -4,6 +4,7 @@ import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferStrategy;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
@@ -59,6 +60,7 @@ public class GameWindow extends Canvas implements Runnable {
     public void start() {
         EventQueue.invokeLater(() -> {
             frame.setVisible(true);
+            GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(frame);
             screen = new Screen(getWidth(), getHeight());
 
             running = true;
