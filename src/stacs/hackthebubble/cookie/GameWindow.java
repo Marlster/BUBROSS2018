@@ -11,14 +11,37 @@ import javax.swing.WindowConstants;
 import stacs.hackthebubble.cookie.events.EventEmitter;
 import stacs.hackthebubble.cookie.events.EventEmitter.EventConstant;
 import stacs.hackthebubble.cookie.graphics.Screen;
+import stacs.hackthebubble.cookie.input.Keyboard;
+import stacs.hackthebubble.cookie.input.Mouse;
 
 /**
  * The window in which the game is running and controls the launching and execution of the main renderer thread of the program
  */
 public class GameWindow extends Canvas implements Runnable {
 
+    /**
+     * The only instance of the {@link GameWindow} which should exist. If a GameWindow is created while this defined, an error will be raised.
+     */
+    private static GameWindow instance;
+
+    /**
+     * Returns the saved instance of the game window or null if one has not been found
+     */
+    public static GameWindow getInstance() {
+        return instance;
+    }
+
     private static final int WIDTH = 1000;
     private static final int HEIGHT = (int) ((2 / 3d) * WIDTH);
+
+    /**
+     * Handles all keyboard input and is how the user keyboard should be interfaced in game
+     */
+    private Keyboard keyboard;
+    /**
+     * Handles all mouse input and is how the user mouse should be interfaced in game
+     */
+    private Mouse mouse;
 
     /**
      * The frame which contains this canvas and is the base game window
@@ -42,12 +65,33 @@ public class GameWindow extends Canvas implements Runnable {
      * Constructs a new window, adds this to it and packs it. Prepares the container thread with this runnable but does not launch it
      */
     public GameWindow() {
+        if (instance != null) {
+            throw new RuntimeException("Failed to create game window because there is already an instance existing");
+        }
+
+        instance = this;
         frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         frame.add(this);
         frame.pack();
+
+        frame.enableInputMethods(true);
+        enableInputMethods(true);
+
+        mouse = new Mouse();
+        keyboard = new Keyboard();
+
+        addMouseListener(mouse);
+        addMouseMotionListener(mouse);
+        addMouseWheelListener(mouse);
+        addKeyListener(keyboard);
+
+        frame.addMouseListener(mouse);
+        frame.addMouseMotionListener(mouse);
+        frame.addMouseWheelListener(mouse);
+        frame.addKeyListener(keyboard);
 
         containerThread = new Thread(this, "Game Core Thread");
     }
@@ -150,4 +194,11 @@ public class GameWindow extends Canvas implements Runnable {
         EventEmitter.emit(EventConstant.UPDATE);
     }
 
+    public Keyboard getKeyboard() {
+        return keyboard;
+    }
+
+    public Mouse getMouse() {
+        return mouse;
+    }
 }
