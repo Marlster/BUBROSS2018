@@ -8,6 +8,7 @@ import java.awt.image.BufferStrategy;
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
 import stacs.hackthebubble.cookie.events.EventEmitter;
+import stacs.hackthebubble.cookie.graphics.Screen;
 
 /**
  * The window in which the game is running and controls the launching and execution of the main renderer thread of the program
@@ -30,6 +31,10 @@ public class GameWindow extends Canvas implements Runnable {
      * If the current thread should be running, if set to false it 'should' break the {@link #run()} function
      */
     private boolean running;
+    /**
+     * The graphics manager for this game. This should hand the actual rendering code to extract it from this class
+     */
+    private Screen screen;
 
     /**
      * Constructs a new window, adds this to it and packs it. Prepares the container thread with this runnable but does not launch it
@@ -53,6 +58,8 @@ public class GameWindow extends Canvas implements Runnable {
     public void start() {
         EventQueue.invokeLater(() -> {
             frame.setVisible(true);
+            screen = new Screen(getWidth(), getHeight());
+
             running = true;
             containerThread.start();
         });
@@ -72,7 +79,7 @@ public class GameWindow extends Canvas implements Runnable {
         int fps = 0;
         int ups = 0;
         while (running) {
-//            render();
+            render();
             fps++;
 
             // Update should only be called 60 times per second so if only 1/60th of a second has passed can we call it
@@ -105,8 +112,7 @@ public class GameWindow extends Canvas implements Runnable {
         }
 
         Graphics2D g = (Graphics2D) bs.getDrawGraphics();
-
-        // TODO hand off graphics to the external renderers
+        screen.render(g);
 
         g.dispose();
         bs.show();
