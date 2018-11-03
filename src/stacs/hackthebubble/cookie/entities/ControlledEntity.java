@@ -1,6 +1,8 @@
 package stacs.hackthebubble.cookie.entities;
 
+import java.io.IOException;
 import stacs.hackthebubble.cookie.GameWindow;
+import stacs.hackthebubble.cookie.entities.projectile.Projectile;
 import stacs.hackthebubble.cookie.events.EventEmitter.EventConstant;
 import stacs.hackthebubble.cookie.game.GameState;
 import stacs.hackthebubble.cookie.graphics.sprites.Sprite;
@@ -9,6 +11,8 @@ import stacs.hackthebubble.cookie.location.Coordinate;
 public class ControlledEntity extends LivingEntity {
 
     private final int JUMP_LENGTH = 1000;
+    private long updateSinceLastProjectile = -1;
+    private int updatesBetweenProjectiles = 20;
 
     private int keyJump;
     private int keyLeft;
@@ -29,6 +33,7 @@ public class ControlledEntity extends LivingEntity {
 
     @Override
     public void onEvent(String event, Object... data) {
+        updateSinceLastProjectile++;
         if (!isStatic && jumpTime == -1) {
             if (GameState.getActiveGameState() != null && !isCollidingWithSomething()) {
                 location = location.offsetY(5);
@@ -49,6 +54,15 @@ public class ControlledEntity extends LivingEntity {
             }
             if (GameWindow.getInstance().getKeyboard().isKeyPressed(keyRight)) {
                 location = location.offsetX(5);
+            }
+            if (GameWindow.getInstance().getKeyboard().isKeyPressed(keyAttack) && (updateSinceLastProjectile > updatesBetweenProjectiles || updateSinceLastProjectile == -1)) {
+                try {
+                    Entity entity = new Projectile(getLocation(), new Sprite("/projectiles/projectile.png"), 7, -3, 0.15f, 0.7f, 1000);
+                    updateSinceLastProjectile = 0;
+                    GameState.getActiveGameState().addEntities(entity);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             if (GameWindow.getInstance().getKeyboard().isKeyPressed(keyJump) && jumpTime == -1 && isCollidingWithSomething()) {
                 jumpTime = System.currentTimeMillis();
