@@ -59,7 +59,10 @@ public class GameWindow extends Canvas implements Runnable {
             }
 
             if (System.currentTimeMillis() - lastOutput >= 1000) {
+                lastOutput = System.currentTimeMillis();
                 System.out.println(fps + "fps, " + ups + "ups");
+                fps = 0;
+                ups = 0;
             }
         }
     }
