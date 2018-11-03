@@ -39,8 +39,17 @@ public class Screen {
      * @param g the graphics to draw the images to
      */
     public void render(Graphics2D g) {
-        if (GameState.getActiveGameState() != null){
+        if (GameState.getActiveGameState() != null) {
             GameState.getActiveGameState().render(g, this);
+            GameState.getActiveGameState().getLevel().getBounds().forEach(b -> {
+                int width = b.getBottomRight().getX() - b.getTopLeft().getX();
+                int height = b.getBottomRight().getY() - b.getTopLeft().getY();
+                g.setColor(Color.BLUE);
+                g.drawRect(b.getTopLeft().getX(), b.getTopLeft().getY(), width, height);
+                g.setColor(Color.GREEN);
+                g.fillOval(b.getTopLeft().getX() - 5, b.getTopLeft().getY() - 5, 10, 10);
+                g.fillOval(b.getBottomRight().getX() - 5, b.getBottomRight().getY() - 5, 10, 10);
+            });
         }
     }
 
