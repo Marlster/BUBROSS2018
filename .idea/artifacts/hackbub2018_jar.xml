@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="hackbub2018:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/hackbub2018_jar</output-path>
+    <root id="archive" name="hackbub2018.jar">
+      <element id="module-output" name="hackbub2018" />
+    </root>
+  </artifact>
+</component>
