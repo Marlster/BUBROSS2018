@@ -49,8 +49,6 @@ public class GameWindow extends Canvas implements Runnable {
         frame.add(this);
         frame.pack();
 
-        EventEmitter.subscribe("update", (a, b) -> frame.setTitle("UPDATE! " + System.currentTimeMillis()));
-
         containerThread = new Thread(this, "Game Core Thread");
     }
 
@@ -60,7 +58,7 @@ public class GameWindow extends Canvas implements Runnable {
     public void start() {
         EventQueue.invokeLater(() -> {
             frame.setVisible(true);
-            GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(frame);
+//            GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(frame);
             screen = new Screen(getWidth(), getHeight());
 
             running = true;
@@ -75,31 +73,41 @@ public class GameWindow extends Canvas implements Runnable {
     @Override
     public void run() {
         final int maxUPS = 60;
+        final int maxFPS = 200;
+
+        final int fpsDelta = 1000 / maxFPS;
         final int delta = 1000 / maxUPS;
+
         long lastUpdate = System.currentTimeMillis();
+        long lastRender = System.currentTimeMillis();
         long lastOutput = System.currentTimeMillis();
 
         int fps = 0;
         int ups = 0;
         while (running) {
-            render();
-            fps++;
+            long now = System.currentTimeMillis();
+
+            if (now - lastRender >= fpsDelta) {
+                render();
+                lastRender = now;
+                fps++;
+            }
 
             // Update should only be called 60 times per second so if only 1/60th of a second has passed can we call it
-            if (System.currentTimeMillis() - lastUpdate >= delta) {
+            if (now - lastUpdate >= delta) {
                 update();
                 ups++;
-                lastUpdate = System.currentTimeMillis();
+                lastUpdate = now;
             }
 
             // Output once per second and reset the fps and the ups count
-            if (System.currentTimeMillis() - lastOutput >= 1000) {
-                System.out.println(fps + "fps, " + ups + "ups");
+            if (now - lastOutput >= 1000) {
+                frame.setTitle(fps + "fps, " + ups + "ups");
 
                 fps = 0;
                 ups = 0;
 
-                lastOutput = System.currentTimeMillis();
+                lastOutput = now;
             }
         }
     }
@@ -110,15 +118,29 @@ public class GameWindow extends Canvas implements Runnable {
     private void render() {
         BufferStrategy bs = getBufferStrategy();
         if (bs == null) {
-            createBufferStrategy(2);
+            createBufferStrategy(3);
             return;
-        }
+        }// Render single frame
+        do {
+            // The following loop ensures that the contents of the drawing buffer
+            // are consistent in case the underlying surface was recreated
+            do {
+                // Get a new graphics context every time through the loop
+                // to make sure the strategy is validated
+                Graphics2D g = (Graphics2D) bs.getDrawGraphics();
+                screen.render(g);
+                // Dispose the graphics
+                g.dispose();
 
-        Graphics2D g = (Graphics2D) bs.getDrawGraphics();
-        screen.render(g);
+                // Repeat the rendering if the drawing buffer contents
+                // were restored
+            } while (bs.contentsRestored());
 
-        g.dispose();
-        bs.show();
+            // Display the buffer
+            bs.show();
+
+            // Repeat the rendering if the drawing buffer was lost
+        } while (bs.contentsLost());
     }
 
     /**
